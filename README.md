@@ -13,7 +13,8 @@ Including the following information:
 * Patch
 * Build
 
-The build can be auto incremented. 
+The `build` can be auto incremented. The `major`, `minor` and `patch` can be edited by hand in the created file. 
+With every call the file is loaded and the values are adjusted. All additionally added lines remain in the file.
 
 ## Usage
 ```
@@ -28,7 +29,7 @@ python versioning.py <FILE> <CODESTYLE> <AUTOINC>
   * `DEFINEHEADER` header file for `c` / `c++`  
 * `AUTOINC` = Increment the build version var. `True` or `False`
 
-## Integrate
+## Integration
 
 ### PlatformIO
 
