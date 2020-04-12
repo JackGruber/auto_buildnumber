@@ -16,6 +16,19 @@ Including the following information:
 The `build` can be auto incremented. The `major`, `minor` and `patch` can be edited by hand in the created file. 
 With every call the file is loaded and the values are adjusted. All additionally added lines remain in the file.
 
+Example file:
+
+```
+#define VERSION_BRANCH master
+#define VERSION_COMMIT 4d08e78
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 5
+#define VERSION_PATCH 2
+#define VERSION_BUILD 12
+#define BUILD_DATE 2020-04-12
+#define BUILD_TIME 22:20
+```
+
 ## Usage
 ```
 python versioning.py <FILE> <CODESTYLE> <AUTOINC>
