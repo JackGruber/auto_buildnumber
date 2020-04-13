@@ -174,7 +174,6 @@ def WriteVersionFile(file, style, branch, commit, date, time, major, minor, patc
             f.write("%s\n" % line)
     
 def UpdateVersionFile(file,style,inc_build):
-    print(type(inc_build))
     if type(inc_build) == str:  
         if "true" in inc_build.lower():
             inc = True
