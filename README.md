@@ -19,19 +19,19 @@ With every call the file is loaded and the values are adjusted. All additionally
 Example file:
 
 ```
-#define VERSION_BRANCH master
-#define VERSION_COMMIT 4d08e78
-#define VERSION_MAJOR 1
-#define VERSION_MINOR 5
-#define VERSION_PATCH 2
-#define VERSION_BUILD 12
-#define BUILD_DATE 2020-04-12
-#define BUILD_TIME 22:20
+#define VERSION_MAJOR "0"
+#define VERSION_MINOR "1"
+#define VERSION_PATCH "1"
+#define VERSION_BUILD "1"
+#define BUILD_BRANCH "master"
+#define BUILD_COMMIT "684ee5f"
+#define BUILD_DATE "2020-04-13"
+#define BUILD_TIME "12:41"
 ```
 
 ## Usage
 ```
-python versioning.py <FILE> <CODESTYLE> <AUTOINC>
+python versioning.py <FILE> <CODESTYLE> <AUTOINC> <BUILDFILE>
 ```
 
 * `File` = File Path to version file
@@ -41,10 +41,13 @@ python versioning.py <FILE> <CODESTYLE> <AUTOINC>
   * `python`
   * `DEFINEHEADER` header file for `c` / `c++`  
 * `AUTOINC` = Increment the build version var. `True` or `False`
+* `BUILDFILE` = (Optional) To save the `BUILD_*` var in a seperated file
 
 ## Integration
 
 ### PlatformIO
+
+Modify the platformio_versioning.py to your needs. 
 
 ```
 extra_scripts = 

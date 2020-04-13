@@ -122,58 +122,91 @@ def GetVersionLine(style, var_name, var):
     else:
         return ""
 
-def WriteVersionFile(file, style, branch, commit, date, time, major, minor, patch, build):
+def WriteVersionFile(file, style, major, minor, patch, build):
     content = []
+    
+    insert_major = False
+    insert_minor = False
+    insert_patch = False
+    insert_build = False
+    
     if os.path.isfile(file):
         print("Version file exist")
         with open(file) as f:
             org_content = f.read().splitlines()
             
         for line in org_content:
-            if "VERSION_BRANCH" in line:
-                content.append(GetVersionLine(style, "VERSION_BRANCH", branch))
-            elif "VERSION_COMMIT" in line:
-                content.append(GetVersionLine(style, "VERSION_COMMIT", commit))
-            elif "VERSION_MAJOR" in line:
+            if "VERSION_MAJOR" in line:
                 content.append(GetVersionLine(style, "VERSION_MAJOR", str(major)))
+                insert_major = True
             elif "VERSION_MINOR" in line:
                 content.append(GetVersionLine(style, "VERSION_MINOR", str(minor)))
+                insert_minor = True
             elif "VERSION_PATCH" in line:
                 content.append(GetVersionLine(style, "VERSION_PATCH", str(patch)))
+                insert_patch = True
             elif "VERSION_BUILD" in line:
                 content.append(GetVersionLine(style, "VERSION_BUILD", str(build)))
-            elif "BUILD_DATE" in line:
-                content.append(GetVersionLine(style, "BUILD_DATE", str(date)))
-            elif "BUILD_TIME" in line:
-                content.append(GetVersionLine(style, "BUILD_TIME", str(time)))
+                insert_build = True
             else:
                 content.append(line)
         
-    else:   
-        print("No version file exist")
-        content.append(GetVersionLine(style, "VERSION_BRANCH", branch))
-        content.append(GetVersionLine(style, "VERSION_COMMIT", commit))
+    if insert_major == False:
         content.append(GetVersionLine(style, "VERSION_MAJOR", str(major)))
+    if insert_minor == False:    
         content.append(GetVersionLine(style, "VERSION_MINOR", str(minor)))
+    if insert_patch == False:
         content.append(GetVersionLine(style, "VERSION_PATCH", str(patch)))
+    if insert_build == False:    
         content.append(GetVersionLine(style, "VERSION_BUILD", str(build)))
-        content.append(GetVersionLine(style, "BUILD_DATE", date))
-        content.append(GetVersionLine(style, "BUILD_TIME", time))
-    
-    print("VERSION_BRANCH:" + branch)
-    print("VERSION_COMMIT:" + commit)
-    print("VERSION_MAJOR:" + str(major))
-    print("VERSION_MINOR:" + str(minor))
-    print("VERSION_PATCH:" + str(patch))
-    print("VERSION_BUILD:" + str(build))
-    print("BUILD_DATE:" + date)
-    print("BUILD_TIME:" + time)
     
     with open(file, 'w') as f:
         for line in content:
             f.write("%s\n" % line)
     
-def UpdateVersionFile(file,style,inc_build):
+def WriteBuildFile(file, style, branch, commit, date, time):
+    content = []
+    
+    insert_branch = False
+    insert_commit = False
+    insert_date = False
+    insert_time = False
+    
+    if os.path.isfile(file):
+        print("Dynamic version file exist")
+        with open(file) as f:
+            org_content = f.read().splitlines()
+            
+        for line in org_content:
+            if "BUILD_BRANCH" in line:
+                content.append(GetVersionLine(style, "BUILD_BRANCH", branch))
+                insert_branch = True
+            elif "BUILD_COMMIT" in line:
+                content.append(GetVersionLine(style, "BUILD_COMMIT", commit))
+                insert_commit = True
+            elif "BUILD_DATE" in line:
+                content.append(GetVersionLine(style, "BUILD_DATE", str(date)))
+                insert_date = True
+            elif "BUILD_TIME" in line:
+                content.append(GetVersionLine(style, "BUILD_TIME", str(time)))
+                insert_time = True
+            else:
+                content.append(line)
+                
+    if insert_branch == False:
+        content.append(GetVersionLine(style, "BUILD_BRANCH", branch))
+    if insert_commit == False:
+        content.append(GetVersionLine(style, "BUILD_COMMIT", commit))
+    if insert_date == False:
+       content.append(GetVersionLine(style, "BUILD_DATE", str(date)))
+    if insert_time == False:
+        content.append(GetVersionLine(style, "BUILD_TIME", str(time)))
+        
+    with open(file, 'w') as f:
+        for line in content:
+            f.write("%s\n" % line)
+    
+def UpdateVersionFile(file,style,inc_build, build_file=""):
     if type(inc_build) == str:  
         if "true" in inc_build.lower():
             inc = True
@@ -181,25 +214,42 @@ def UpdateVersionFile(file,style,inc_build):
             inc = False
     else:
         inc = inc_build
-    
+        
+    if build_file == "":
+        build_file = file
+
     commit = GetGitCommit()
     branch = GetGitBranch()
     date = GetBuilDate()
     time = GetBuilTime()
     major, minor, patch, build = GetVersionFromFile(file, style, inc)
+    
+    print("VERSION_MAJOR:" + str(major))
+    print("VERSION_MINOR:" + str(minor))
+    print("VERSION_PATCH:" + str(patch))
+    print("VERSION_BUILD:" + str(build))
+    print("BUILD_BRANCH:" + branch)
+    print("BUILD_COMMIT:" + commit)
+    print("BUILD_DATE:" + date)
+    print("BUILD_TIME:" + time)
  
-    WriteVersionFile(file, style, branch, commit, date, time, major, minor, patch, build)
-
+    WriteVersionFile(file, style, major, minor, patch, build)
+    WriteBuildFile(build_file, style, branch, commit, date, time)
+    
 # executed as script
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        print("Usage: " + sys.argv[0] + " <VERSIONFILE> <STYLE> <INC BUILD>")
+    if len(sys.argv) < 4 or len(sys.argv) > 5:
+        print("Usage: " + sys.argv[0] + " <VERSIONFILE> <STYLE> <INC BUILD> <BUILDFILE>")
         print("STYLE = BATCH | POWERSHELL | DEFINEHEADER")
         print("INC BUILD = True | False")
+        print("BUILDFILE = Filepath for file with BUILD_* informations (optional)")
         print("")
         sys.exit()
     else:
         FILE=sys.argv[1]
         CODESTYLE=sys.argv[2]
         AUTOINC=sys.argv[3]
-        UpdateVersionFile(FILE, CODESTYLE, AUTOINC)
+        if len(sys.argv) == 5:
+            UpdateVersionFile(FILE, CODESTYLE, AUTOINC, sys.argv[4])
+        else:
+            UpdateVersionFile(FILE, CODESTYLE, AUTOINC)
