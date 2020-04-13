@@ -48,8 +48,5 @@ python versioning.py <FILE> <CODESTYLE> <AUTOINC>
 
 ```
 extra_scripts = 
-    pre:versioning.py
-build_flags = 
-    -D VERSIONING_FILE=include/version.h
-    -D VERSIONING_INC=True
+    pre:platformio_versioning.py
 ```
