@@ -173,42 +173,33 @@ def WriteVersionFile(file, style, branch, commit, date, time, major, minor, patc
             f.write("%s\n" % line)
     
 def UpdateVersionFile(file,style,inc_build):
+    print(type(inc_build))
+    if type(inc_build) == str:  
+        if "true" in inc_build.lower():
+            inc = True
+        else:
+            inc = False
+    else:
+        inc = inc_build
+    
     commit = GetGitCommit()
     branch = GetGitBranch()
     date = GetBuilDate()
     time = GetBuilTime()
-    major, minor, patch, build = GetVersionFromFile(file, style, inc_build)
+    major, minor, patch, build = GetVersionFromFile(file, style, inc)
  
     WriteVersionFile(file, style, branch, commit, date, time, major, minor, patch, build)
 
-
-# PlatformIO
-try:
-    Import("env")
-    my_flags = env.ParseFlags(env['BUILD_FLAGS'])
-    defines = {k: v for (k, v) in my_flags.get("CPPDEFINES")}
-    print(defines)
-    platformio = True
-except:
-    platformio = False
-
-
-if platformio == True:
-    FILE=defines.get("VERSIONING_FILE")
-    AUTOINC=defines.get("VERSIONING_INC")
-    CODESTYLE="DEFINEHEADER"
-elif len(sys.argv) != 4:
-    print("Usage: " + sys.argv[0] + " <VERSIONFILE> <STYLE> <INC BUILD>")
-    print("STYLE = BATCH | POWERSHELL | DEFINEHEADER")
-    print("INC BUILD = True | False")
-    print("")
-    sys.exit()
-else:
-    FILE=sys.argv[1]
-    CODESTYLE=sys.argv[2]
-    AUTOINC=sys.argv[3]
-
-if "true" in AUTOINC.lower():
-    UpdateVersionFile(FILE, CODESTYLE, True)
-else:
-    UpdateVersionFile(FILE, CODESTYLE, False)
+# executed as script
+if __name__ == '__main__':
+    if len(sys.argv) != 4:
+        print("Usage: " + sys.argv[0] + " <VERSIONFILE> <STYLE> <INC BUILD>")
+        print("STYLE = BATCH | POWERSHELL | DEFINEHEADER")
+        print("INC BUILD = True | False")
+        print("")
+        sys.exit()
+    else:
+        FILE=sys.argv[1]
+        CODESTYLE=sys.argv[2]
+        AUTOINC=sys.argv[3]
+        UpdateVersionFile(FILE, CODESTYLE, AUTOINC)
