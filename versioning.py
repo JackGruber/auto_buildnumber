@@ -92,13 +92,14 @@ def ExtractFromDefineHeader(line, var_name):
     try:
         split = line.split(var_name)
         var = split[1].strip()
+        var = var[1:len(var)-1]
     except:
         print( "ExtractFromDefineHeader: split ERROR" )
         
     return(var)
         
 def GetDefineHeaderLine(var_name, var):
-    return "#define " + var_name + " " + var
+    return '#define ' + var_name + ' "' + var + '"'
 
 def GetPowershellLine(var_name, var):
     return "$GLOBAL:" + var_name + " = '" + var + "'"
